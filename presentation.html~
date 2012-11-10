@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2011 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Chrome DevRel Team (chrome-devrel@googlegroups.com)
+                 Alex Russell (slightlyoff@chromium.org)
+                 Brad Neuberg
+-->
+<html manifest="cache.appcache">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+    <title>Самосборка одномерных цепочек</title>
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
+    <link id="prettify-link" href="src/prettify/prettify.css" rel="stylesheet" disabled />
+    <link href="css/moon.css" class="theme" rel="stylesheet" />
+    <link href="css/sand.css" class="theme" rel="stylesheet" />
+    <link href="css/sea_wave.css" class="theme" rel="stylesheet" />
+    <link href="css/default.css" class="theme" rel="stylesheet"/>
+    <link href="css/common.css" rel="stylesheet"  />
+  </head>
+  <body>
+    <nav id="helpers">
+      <button title="Previous slide" id="nav-prev" class="nav-prev">⇽</button> 
+      <button title="Jump to a random slide" id="slide-no">5</button> 
+      <button title="Next slide" id="nav-next" class="nav-next">⇾</button>
+      <menu>
+        <button type="checkbox" data-command="toc" title="Table of Contents" class="toc">TOC</button>
+        <!-- <button type="checkbox" data-command="resources" title="View Related Resources">☆</button> -->
+        <button type="checkbox" data-command="notes" title="View Slide Notes">✏</button>
+        <button type="checkbox" data-command="source" title="View slide source">↻</button>
+        <button type="checkbox" data-command="help" title="View Help">?</button>
+      </menu>
+    </nav>
+    <div class="presentation">
+      <div id="presentation-counter">Loading...</div>
+      <div class="slides">
+        <div class="slide" id="landing-slide">
+          <style>
+            #landing-slide p {
+              font-size: 35px;
+            }
+            #disclaimer-message {
+              font-size: 20px;
+            }
+          </style>
+          <section class="middle">
+            <p>Эта презентация написана на HTML5, CSS3 и JS</p>
+            <p>Нажмите <span id="left-init-key" class="key">&rarr;</span> для продолжения.</p>
+          </section>
+          <aside class="note">
+            <section>
+              Алоха! 
+            </section>
+          </aside> 
+        </div>
+
+        <div class="slide" id="controls-slide">
+          <header>Hot-keys</header>
+          <style>
+            #controls-slide li, #controls-slide p {
+              font-size: 32px;
+            }
+            #controls-slide .key {
+              bottom: 2px;
+            }
+          </style>
+          <section>
+            <ul>
+              <li><span class="key">&larr;</span> и <span class="key">&rarr;</span> для навигации.</li>
+              <li><span class="key">Ctrl/Command</span> и <span class="key">+</span> или <span class="key">-</span> для изменения масштаба.</li>
+              <li><span class="key">S</span> для просмотра исходного кода страницы.</li>
+              <li><span class="key">N</span> включить заметки.</li>
+              <li><span class="key">3</span> включить 3D.</li>
+              <li><span class="key">0</span> помощь.</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="slide" id="title-slide">
+          <style>
+            #title-slide h1, #title-slide h2 {
+              color: black;
+            }
+            #title-slide h1 {
+              letter-spacing: -2px;
+              font-size: 90px;
+            }
+            #title-slide h2 {
+              margin-top: -5px;
+              font-size: 40px;
+              letter-spacing: -1px;
+            }
+          </style>
+          <section class="middle">
+           
+              <h1>
+                Самосборка одномерных цепочек
+              </h1>
+              
+           
+       
+          </section>
+        </div>
+
+
+<div class="slide" id="begining">
+          <header>Самосборка</header>
+          <section>
+            <style>
+            #definitions {
+              font-size: 50px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <ul id="definitions">
+            <li>Экспериментально открыта в 30-х годах прошлого века. </li>
+            <li>Процесс возникновения из молекулярных компонент биологически важных структур.</li>
+            <li>Термин для описания процессов, в результате которых неорганизованные системы благодаря специфическому взаимодействию компонентов систем приходят к упорядоченному состоянию.</li>
+            </ul>
+            <h2>Сборка из звеньев</h2>
+            <ul id="definitions">
+            <li>Происходит сама по себе. </li>
+            <li>Случайный, никем и никак не управляемый процесс.</li>
+            <li>Вероятность сборки определяется концентрацией деталей и трудностями создания необходимых для сборки условий.</li>
+            </ul>
+            <h2>Научные работы</h2>
+            	<ul id="definitions">
+            <li>А.М. Леонтович &#171;Одна задача о самосборке отрезков&#187; (1975). </li>
+            <li>М. Л. Тай &#171;Стохастическая модель самосборки отрезков с разрывами&#187; (1979), &#171;Исследование стохастических моделей самосборки линейных цепей&#187; (1980), &#171;Динамика процессов самосборки&#187; (2000).</li>
+            <li>Ю.И. Неймарк, Н. Я Кожан, В.П. Савельев &#171;Динамические модели теории управления&#187; (1985).</li>
+            </ul>
+          </section>
+        </div>
+
+        
+        <div class="slide" id="math">
+          <header>Математическая модель</header>
+          <section>
+            <style>
+            #definitions {
+              font-size:20px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <ul id="definitions">
+            <li>Звенья могут быть разных типов: <b>A<sub>1</sub></b>, <b>A<sub>2</sub></b>, ..., <b>A<sub>n</sub></b>. </li>
+            <li>Звенья соединяются между собой, образуя цепочки. Соединения могут быть лишь определённых типов.</li>
+            <li>К звену типа <b>A<sub>i</sub></b> могут подсоединиться только звенья типов <b>A<sub>i-1</sub></b> и <b>A<sub>i+1</sub></b>.
+             К образованным двухзвенным цепочкам <b>A<sub>i-1</sub>A<sub>i</sub></b> и <b>A<sub>i</sub>A<sub>i+1</sub></b>
+              в свою очередь могут присоединиться звенья <b>A<sub>i-2</sub></b>,<b>A<sub>i+1</sub></b>,<b>A<sub>i-1</sub> </b>
+              и <b>A<sub>i+2</sub></b>, образуя трёхзвенные цепочки <b>A<sub>i-2</sub>A<sub>i-1</sub>A<sub>i</sub></b>
+              <b>A<sub>i-1</sub>A<sub>i</sub>A<sub>i+1</sub></b>, <b>A<sub>i</sub>A<sub>i+1</sub>A<sub>i+2</sub></b> и так далее.</li>
+         	<li>Цепочки могут соединяться друг с другом. Например, цепочка <b>A<sub>l</sub>...A<sub>i</sub></b> может соединиться с цепочкой
+         	 <b>A<sub>i+1</sub>...A<sub>j</sub></b>, образуя новую, более длинную цепочку <b>A<sub>l</sub>...A<sub>i</sub>...A<sub>j</sub></b>. И так вплоть до образования цепочек  <b>A<sub>1</sub>A<sub>2</sub>...A<sub>n</sub></b>.</li>
+            <li>Возможны спонтанные разрывы цепочек. Любая цепочка <b>A<sub>l</sub>...A<sub>l+1</sub>...A<sub>k</sub></b> может разорваться на две части <b>A<sub>l</sub>...A<sub>s</sub></b> и <b>A<sub>s+1</sub>...A<sub>k</sub></b>.</li>
+            </ul>
+          </section>
+        </div>
+        
+        <div class="slide" id="lucky">
+          <header>Вероятности</header>
+          <section>
+            <style>
+            #definitions {
+              font-size:20px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <p>Выясним зависимости концентраций всевозможных различных цепочек <b>A<sub>i</sub>...A<sub>j</sub></b> от времени. Обозначим эти концентрации через <b>x<sub>ij</sub></b> (1&#8804;i&#60;j&#8804;n). </p>
+            <p>Для перехода к дифференциальным уравнениям изменения концентраций во времени необходимо знать:</p>
+            <ul id="definitions">
+            <li>Вероятности образования этих цепочек из других. </li>
+            <li>Вероятности тех или иных разрывов уже образовавшихся цепочек.</li>
+            </ul>
+           <p> Пусть</p>
+            <p><b>p<sub>isj</sub></b> - вероятность образования из любых цепочек <b>A<sub>i</sub>...A<sub>s</sub></b> и <b>A<sub>s+1</sub>...A<sub>j</sub></b> цепочки <b>A<sub>i</sub>...A<sub>s</sub>...A<sub>j</sub></b></p>
+          <p><b>q<sub>lkm</sub></b> - вероятность разрыва любой цепочки <b>A<sub>l</sub>...A<sub>k</sub>A<sub>k+1</sub>...A<sub>m</sub></b> на цепочки <b>A<sub>l</sub>...A<sub>k</sub></b> и <b>A<sub>k+1</sub>...A<sub>m</sub></b></p> 
+				<p>Пусть вероятность сборок зависит только от соединяющихся звеньев, а вероятность разрыва - от разъединяющихся звеньев.</p>
+          <p>Тогда <b>p<sub>isj</sub> = p<sub>s</sub></b>, а <b>q<sub>lkm</sub>=q<sub>k</sub></b></p></section>
+        </div>
+        
+        <div class="slide" id="magic">
+          <header><h1>Всевозможные превращения</h1></header>
+          <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+</style>
+          <section><p>Образование и распад цепочки <b>A<sub>i</sub>...A<sub>j</sub></b><p>
+          <img id="phasePort" height="350" src="scheme.png" alt="formula" />
+          	<p>Изменение концентрации цепочек за малое время τ</p>      
+				 <img id="phasePort" height="90" src="deltax.png" alt="formula" />   
+          </section>
+          
+          
+          </div>
+          
+          <div class="slide" id="magic-ex">
+          <header><h1>Всевозможные превращения</h1></header>
+          <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+</style>
+          <section><p>Перейдём к пределу при τ→0 и получим систему дифференциальных уравнений вида<p>
+          <img id="phasePort" height="130" src="diff.png" alt="formula" />
+          	<p>Эта система достаточно сложна - в ней <b>&#189;n(n-1)</b> уравнений и столько же концентраций x<sub>ij</sub>.
+          	Однако её исследование при достаточно больших временах сводится к рассмотрению системы всего лишь <b>n-1</b> уравнений.</p>      
+				  
+          </section>
+          
+          
+          </div>
+                
+        <div class="slide" id="int-curve">
+          <header><h1>Интегральная поверхность ℑ<sub>n-1</sub></h1></header>
+          <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <img id="phasePort" height="300" src="curve.png" alt="formula" />
+          <ul>
+			<li>Все соседние траектории асимптотически приближаются к этой поверхности</li>
+			<li>Через некоторое время в системе возникает некий ненарушаемый порядок из первоначально хаотизированных и случайных концентраций.</li>  
+			<li>Не всегда имеется глобально устойчивое состояние равновесия и отвечающий ему полный порядок.</li>   	     
+				  </ul>
+          </section> 
+           </div>
+          
+          <div class="slide" id="newvar">
+          <header>Новые переменные</header>
+       <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <p>Введём новые переменные</p>
+          <center><img id="phasePort" src="newp.png" alt="formula" /></center>
+          <p><b>y<sub>lm</sub></b> - концентрация всех цепочек <b>A<sub>l</sub>...A<sub>m</sub></b>.</p>
+          <p><b>y<sub>ll</sub></b> - концентрация всех цепочек <b>A<sub>l</sub></b>.</p>
+          <center><img id="phasePort" src="xlm.png" alt="formula" /></center>
+          
+            
+          </section>
+          
+          
+          </div>
+          
+          <div class="slide" id="newvar2">
+          <header>Новые переменные</header>
+       <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <p>Запишем уравнение</p>
+          <center><img id="phasePort" src="diff.png" alt="formula" /></center>
+          <p>в новых переменных <b>y<sub>lm</sub></b>:</p>
+          
+            <center><img id="phasePort" src="equv.png" alt="formula" /></center>
+          </section>
+          
+          
+          </div>
+           
+				<div class="slide" id="newvarv">
+          <header>Новые переменные</header>
+       <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <p>Введём теперь переменные</p>
+          <center><img id="phasePort" src="newp2.png" alt="formula" /></center>
+          <center><img id="phasePort" src="vdot.png" alt="formula" /></center> <p>где</p>
+          <center><img id="phasePort" src="bigF.png" alt="formula" /></center>
+          
+            
+          </section>
+          
+          
+          </div>
+          
+          <div class="slide" id="newvarv2">
+          <header>Новые переменные</header>
+       <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <p>Поверхность ℑ<sub>n-1</sub> состоит из фазовых траекторий, то есть является интегральной поверхностью.</p>
+          <p>В качестве фазовых переменных можно взять переменные <b>v<sub>ij</sub></b> и <b>u<sub>s</sub>=y<sub>ss+1</sub>     (s=1,2, ..., n-1)</b>.</p>
+          <center><img id="phasePort" src="anotherBigF.png" alt="formula" /></center>
+        
+            
+          </section>
+          
+          
+          </div>
+          
+          <div class="slide" id="zav">
+          <header>Зависимости</header>
+       <style>
+          #phasePort{
+          	margin:0px auto;display:block
+          }
+
+			</style>
+          <section>
+          <p>Спустя некоторое время, в системе всегда устанавливаются зависимости</p>
+          
+          <center><img id="phasePort" src="zav.png" alt="formula" /></center>
+          <p>Перепишем их в виде</p>
+          <center><img id="phasePort" src="zavEx.png" alt="formula" /></center>
+          <center><img id="phasePort" src="ver.png" alt="formula" /></center>
+        
+            
+          </section>
+          
+          
+          </div>
+                     
+                
+         <div class="slide" id="rep-vir">
+          <header>Репликация вирусов</header>
+          <section>
+            <style>
+            #definitions {
+              font-size: 10px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <ul id="definitions">
+            <li>Присоединение к клеточной мембране. </li>
+            <li>Проникновение в клетку.</li>
+            <li>Перепрограммирование клетки.</li>
+            <li>Создание новых вирусных компонентов (звеньев).</li>
+            <li>Сборка новых вирусов из звеньев.</li>
+            <li>Выход из клетки.</li>
+            </ul>
+            <img id="hiv" height="280" src="HIV-budding-Color.jpg" alt="formula" />
+            <img height="280" src="virus3.jpg" alt="formula" />
+          </section>
+        </div>
+        
+        <div class="slide" id="fag">
+          <header>Бактериофаги</header>
+          <section>
+            
+            <p>Это вирусы, избирательно поражающие бактериальные клетки. Являются абсолютными внутриклеточными паразитами.</p></br>
+            <img id="hiv" height="320" src="real-fag.jpg" alt="formula" />
+             <img height="330" src="fagMade.png" alt="formula" />
+          </section>
+        </div>
+        
+        <div class="slide" id="faguse">
+          <header>Применение бактериофагов</header>
+          <section>
+            <style>
+            #definitions {
+              font-size: 10px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <ul id="definitions">
+            <li>Антибактериальная терапия, альтернативная приёму антибиотиков. </li>
+            <li>В генной инженерии в качестве векторов, переносящих участки ДНК. С помощью фагов можно конструировать направленные изменения в геноме хозяйской ДНК.</li>
+            <li>Для изучения белок-белковых, белок-пептидных и ДНК-белковых взаимодействий.</li>
+            <li>Для определения жизнеспособности бактерий.</li>
+            <li>В пищевой промышленности в массовом порядке фагосодержащими средствами обрабатывают готовые к употреблению продукты из мяса и домашней птицы.</li>
+            <li>Сборка литиевых аккумуляторов.</li>
+            </ul>
+            <center><img height="300" src="35953246.jpg" alt="formula" /></center>
+          </section>
+        </div>
+        
+        <div class="slide" id="nano">
+          <header>Нанотехнологии</header>
+          <section>
+            <style>
+            #definitions {
+              font-size: 10px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <p>Самосборка белков позволяет формировать заданные геометрические структуры в качестве остова. Затем поверхности белковых структур могут модифицироваться химическими элементами, получая проводящие поверхности, полупроводниковые структуры, нанокластеры с различными физическими эффектами.</p>
+            <ul id="definitions">
+            <li>Сенсорные элементы. </li>
+            <li>Микрочипы.</li>
+            <li>Другая наноэлектроника.</li>
+            <li>Новые материалы, например графен.</li>
+            </ul>
+            <center><img src="656.png" alt="formula" /></center>
+          </section>
+        </div>
+        
+        <div class="slide" id="graphen">
+          <header>Графен</header>
+          <section>
+            <style>
+            #definitions {
+              font-size: 18px;
+            }
+             #hiv {
+             padding-right: 30px;
+             }
+            </style>
+            <center><img height="500" src="graphen.png" alt="formula" /></center>
+          </section>
+        </div>
+        
+		
+        <div class="slide" id="table-of-contents">
+          <header><h1>the End</h1></header>
+          <style>
+            #toc-list > li {
+              font-size: 26px;
+              line-height: 33px;
+              opacity: 0.85;
+            }
+            #toc-list > li:hover {
+              opacity: 1;
+            }
+            #toc-list a {
+              border-bottom: 0;
+            }
+            #toc-list a:hover{
+              border-bottom: 2px solid #3f3f3f;
+            }
+            #toc-list img {
+              vertical-align: middle;
+              margin-left: 15px;
+            }
+          </style>
+          <section>
+            <ul id="toc-list">
+            </ul>
+          </section>
+        </div>
+
+        
+
+
+      </div> <!-- slides -->
+      <div id="speaker-note" class="invisible" style="display: none;">
+      </div> <!-- speaker note -->
+      <aside id="help" class="sidebar invisible" style="display: hidden;">
+        <table>
+          <caption>Help</caption>
+          <tbody>
+            <tr>
+              <th>Move Around</th>
+              <td>&larr;&nbsp;&rarr;</td>
+            </tr>
+            <tr>
+              <th>Source File</th>
+              <td>s</td>
+            </tr>
+            <tr>
+              <th>Change Theme</th>
+              <td>t</td>
+            </tr>
+            <tr>
+              <th>Syntax Highlight</th>
+              <td>h</td>
+            </tr>
+            <tr>
+              <th>Speaker Notes</th>
+              <td>n</td>
+            </tr>
+            <tr>
+              <th>Toggle 3D</th>
+              <td>3</td>
+            </tr>
+            <tr>
+              <th>Help</th>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+      </aside>
+    </div> <!-- presentation -->
+
+    <!--[if lt IE 9]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
+    </script>
+    <script>CFInstall.check({ mode: "overlay" });</script>
+    <![endif]-->
+
+    <script src="src/prettify/prettify.js" onload="prettyPrint();" defer></script>
+    <script src="js/utils.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script>
+      // Check if new appcache is available, load it, and reload page.
+      if (window.applicationCache) {
+        window.applicationCache.addEventListener('updateready', function(e) {
+          if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+            window.applicationCache.swapCache();
+            if (confirm('A new version of this site is available. Load it?')) {
+              window.location.reload();
+            }
+          }
+        }, false);
+      }
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-15028909-5']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
