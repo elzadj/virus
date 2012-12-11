@@ -318,6 +318,7 @@ a {
 li {
   list-style: disc;
   padding: 10px 0;
+  font-size: 28px;
 }
 
 button {

@@ -388,9 +388,9 @@ pre {
   padding: 10px 20px;
   background: rgba(13, 156, 0, 0.1);
   background-position: center center;
-  display: inline-block;
+  /*display: inline-block;*/
   margin-left:auto;
-margin-right:auto;
+	margin-right:auto;
 width:50%;
   -webkit-border-radius: 8px;
   -khtml-border-radius: 8px;
